@@ -1,10 +1,12 @@
 import './styles/main.css';
-import logoImg from './assets/logo-nlw-esports@3x.png'
+import logoImg from './assets/logo-nlw-esports.png'
 import GameBanner from './components/GameBanner';
 import { useEffect, useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { CreateAdBanner } from './components/CreateAdBanner';
 import { CreateAdModal } from './components/CreateAdModal';
+import { useKeenSlider } from "keen-slider/react"
+import "keen-slider/keen-slider.min.css"
 import axios from 'axios';
 
 export interface Game {
@@ -19,6 +21,13 @@ export interface Game {
 function App() {
   const [games, setGames] = useState<Game[]>([])
 
+  const [ref] = useKeenSlider<HTMLDivElement>({
+    slides: {
+      perView: 5,
+      spacing: 15,
+    },
+  })
+
   useEffect(() => {
     axios('http://localhost:3000/games')
       .then(({ data }) => setGames(data))
@@ -29,13 +38,14 @@ function App() {
       <img src={logoImg} alt="" />
       <h1 className="text-6xl text-white font-black mt-20">Seu <span className="text-transparent bg-nlw-gradient bg-clip-text">duo</span> está aqui.</h1>
 
-      <div className="grid grid-cols-6 gap-6 mt-16">
+      <div ref={ref} className="mt-6 keen-slider">
         {games.map((game: Game) =>
           <GameBanner
             src={game.bannerUrl}
             name={game.title}
             ads={game._count.ads}
             key={game.id}
+            className="keen-slider__slide"
           />
         )}
       </div>
